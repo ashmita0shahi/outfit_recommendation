@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Image Generator</title>
+    <style>
+        body { margin: 20px; font-family: Arial; }
+        canvas { border: 1px solid #ccc; margin: 10px 0; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h2>Test Image Generator for Dress Recommendation Demo</h2>
+    <p>This generates a simple test image with a person silhouette for testing the pose detection.</p>
+    
+    <canvas id="testCanvas" width="300" height="400"></canvas>
+    <br>
+    <button onclick="generateTestImage()">Generate Test Image</button>
+    <button onclick="downloadImage()">Download Image</button>
+    
+    <script>
+        function generateTestImage() {
+            const canvas = document.getElementById('testCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw a simple person silhouette
+            ctx.fillStyle = '#8B4513'; // Brown color for person
+            
+            // Head
+            ctx.beginPath();
+            ctx.arc(150, 70, 30, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Body (torso)
+            ctx.fillRect(130, 100, 40, 100);
+            
+            // Arms
+            ctx.fillRect(110, 120, 20, 60); // Left arm
+            ctx.fillRect(170, 120, 20, 60); // Right arm
+            
+            // Legs
+            ctx.fillRect(135, 200, 15, 80); // Left leg
+            ctx.fillRect(150, 200, 15, 80); // Right leg
+            
+            // Add some pose keypoints as reference
+            const keypoints = [
+                {x: 150, y: 70, label: 'nose'},
+                {x: 140, y: 100, label: 'left_shoulder'},
+                {x: 160, y: 100, label: 'right_shoulder'},
+                {x: 125, y: 150, label: 'left_elbow'},
+                {x: 175, y: 150, label: 'right_elbow'},
+                {x: 120, y: 180, label: 'left_wrist'},
+                {x: 180, y: 180, label: 'right_wrist'},
+                {x: 140, y: 200, label: 'left_hip'},
+                {x: 160, y: 200, label: 'right_hip'},
+                {x: 142, y: 240, label: 'left_knee'},
+                {x: 158, y: 240, label: 'right_knee'},
+                {x: 142, y: 280, label: 'left_ankle'},
+                {x: 158, y: 280, label: 'right_ankle'}
+            ];
+            
+            // Draw keypoints
+            ctx.fillStyle = '#ff0000';
+            keypoints.forEach(point => {
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+            
+            // Add instructions
+            ctx.fillStyle = '#333';
+            ctx.font = '12px Arial';
+            ctx.fillText('Sample test image for pose detection', 10, 30);
+            ctx.fillText('Red dots show expected keypoints', 10, 45);
+        }
+        
+        function downloadImage() {
+            const canvas = document.getElementById('testCanvas');
+            const link = document.createElement('a');
+            link.download = 'test-person.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        // Generate initial image
+        generateTestImage();
+    </script>
+</body>
+</html>

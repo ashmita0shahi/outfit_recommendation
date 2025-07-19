@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dress Images Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .dress-item { border: 1px solid #ccc; padding: 10px; text-align: center; }
+        .dress-item img { max-width: 100%; height: 200px; object-fit: contain; }
+        .status { padding: 5px; margin: 5px; border-radius: 3px; }
+        .loaded { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .loading { background-color: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>Dress Images Verification</h1>
+    <p>Checking if all dress images load correctly...</p>
+    <div id="results"></div>
+
+    <script>
+        const dressImages = [
+            // Hourglass
+            { name: 'wrap-dress-1.png', title: 'Classic Wrap Dress', bodyType: 'Hourglass' },
+            { name: 'fit-flare-1.png', title: 'Fit & Flare Midi', bodyType: 'Hourglass' },
+            { name: 'bodycon-1.png', title: 'Bodycon V-Neck', bodyType: 'Hourglass' },
+            
+            // Pear
+            { name: 'aline-1.png', title: 'A-Line Dress', bodyType: 'Pear' },
+            { name: 'fit-flare-2.png', title: 'Structured Fit & Flare', bodyType: 'Pear' },
+            { name: 'empire-1.png', title: 'Empire Waist Dress', bodyType: 'Pear' },
+            
+            // Apple
+            { name: 'empire-2.png', title: 'Empire Waist Maxi', bodyType: 'Apple' },
+            { name: 'shift-1.png', title: 'Shift Dress', bodyType: 'Apple' },
+            { name: 'tunic-1.png', title: 'Tunic Style Dress', bodyType: 'Apple' },
+            
+            // Rectangle
+            { name: 'betled-1.png', title: 'Belted Sheath Dress', bodyType: 'Rectangle' },
+            { name: 'peplum-1.png', title: 'Peplum Dress', bodyType: 'Rectangle' },
+            { name: 'wrap-2.png', title: 'Printed Wrap Dress', bodyType: 'Rectangle' },
+            
+            // Inverted Triangle
+            { name: 'aline-2.png', title: 'A-Line Midi', bodyType: 'Inverted Triangle' },
+            { name: 'pleated-1.png', title: 'Pleated Skirt Dress', bodyType: 'Inverted Triangle' },
+            { name: 'maxi-1.png', title: 'Flowing Maxi Dress', bodyType: 'Inverted Triangle' }
+        ];
+
+        function createDressCard(dress) {
+            const card = document.createElement('div');
+            card.className = 'dress-item';
+            
+            const img = document.createElement('img');
+            const status = document.createElement('div');
+            status.className = 'status loading';
+            status.textContent = 'Loading...';
+            
+            img.onload = () => {
+                status.className = 'status loaded';
+                status.textContent = '✓ Loaded Successfully';
+            };
+            
+            img.onerror = () => {
+                status.className = 'status error';
+                status.textContent = '✗ Failed to Load';
+                img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjI1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjI1MCIgZmlsbD0iI2Y4ZjlmYSIgc3Ryb2tlPSIjZGVlMmU2IiBzdHJva2Utd2lkdGg9IjIiLz4KICA8dGV4dCB4PSIxMDAiIHk9IjEyNSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjNmE3Mzc2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JbWFnZSBOb3QgRm91bmQ8L3RleHQ+Cjwvc3ZnPg==';
+            };
+            
+            img.src = `/dresses/${dress.name}`;
+            img.alt = dress.title;
+            
+            card.innerHTML = `
+                <h3>${dress.title}</h3>
+                <p><strong>Body Type:</strong> ${dress.bodyType}</p>
+                <p><strong>File:</strong> ${dress.name}</p>
+            `;
+            
+            card.appendChild(img);
+            card.appendChild(status);
+            
+            return card;
+        }
+
+        function renderResults() {
+            const resultsDiv = document.getElementById('results');
+            const grid = document.createElement('div');
+            grid.className = 'grid';
+            
+            dressImages.forEach(dress => {
+                const card = createDressCard(dress);
+                grid.appendChild(card);
+            });
+            
+            resultsDiv.appendChild(grid);
+        }
+
+        renderResults();
+
+        // Summary after a few seconds
+        setTimeout(() => {
+            const loadedCount = document.querySelectorAll('.loaded').length;
+            const errorCount = document.querySelectorAll('.error').length;
+            
+            const summary = document.createElement('div');
+            summary.style.marginTop = '20px';
+            summary.style.padding = '20px';
+            summary.style.backgroundColor = loadedCount === dressImages.length ? '#d4edda' : '#f8d7da';
+            summary.style.borderRadius = '5px';
+            
+            summary.innerHTML = `
+                <h2>Summary</h2>
+                <p><strong>Total Images:</strong> ${dressImages.length}</p>
+                <p><strong>Successfully Loaded:</strong> ${loadedCount}</p>
+                <p><strong>Failed to Load:</strong> ${errorCount}</p>
+                ${loadedCount === dressImages.length ? 
+                    '<p>🎉 All images are working perfectly! Your virtual try-on will work great.</p>' : 
+                    '<p>⚠️ Some images failed to load. Check the file names and paths.</p>'
+                }
+            `;
+            
+            document.getElementById('results').appendChild(summary);
+        }, 3000);
+    </script>
+</body>
+</html>
