@@ -16,6 +16,7 @@ interface AnalyzerCanvasProps {
   startAnalysis: boolean;
 }
 
+
 const AnalyzerCanvas = forwardRef<HTMLCanvasElement, AnalyzerCanvasProps>(({
   imageUrl,
   isAnalyzing,
@@ -32,6 +33,43 @@ const AnalyzerCanvas = forwardRef<HTMLCanvasElement, AnalyzerCanvasProps>(({
   const [currentMetrics, setCurrentMetrics] = useState<any>(null);
   
   useImperativeHandle(ref, () => canvasRef.current!, []);
+
+  const calculateBodyMetrics = (keypoints: any[]) => {
+    try {
+      // Find key landmarks
+      const leftShoulder = keypoints.find(kp => kp.name === 'left_shoulder');
+      const rightShoulder = keypoints.find(kp => kp.name === 'right_shoulder');
+      const leftHip = keypoints.find(kp => kp.name === 'left_hip');
+      const rightHip = keypoints.find(kp => kp.name === 'right_hip');
+
+      if (!leftShoulder || !rightShoulder || !leftHip || !rightHip) {
+        throw new Error('Required keypoints not detected');
+      }
+
+      // Calculate spans
+      const shoulderSpan = Math.abs(rightShoulder.x - leftShoulder.x);
+      const hipSpan = Math.abs(rightHip.x - leftHip.x);
+      
+      // Estimate waist span (approximation between shoulder and hip)
+      const waistSpan = shoulderSpan * 0.8; // Simple approximation
+      
+      // Calculate ratios
+      const r1WaistShoulder = waistSpan / shoulderSpan;
+      const r2HipShoulder = hipSpan / shoulderSpan;
+
+      return {
+        shoulderSpan,
+        waistSpan,
+        hipSpan,
+        r1WaistShoulder,
+        r2HipShoulder
+      };
+    } catch (error) {
+      console.error('Error calculating body metrics:', error);
+      return null;
+    }
+  };
+
 
   const performAnalysis = async () => {
     if (!canvasRef.current || !imageRef.current) {
@@ -104,42 +142,7 @@ const AnalyzerCanvas = forwardRef<HTMLCanvasElement, AnalyzerCanvasProps>(({
     }
   };
 
-  const calculateBodyMetrics = (keypoints: any[]) => {
-    try {
-      // Find key landmarks
-      const leftShoulder = keypoints.find(kp => kp.name === 'left_shoulder');
-      const rightShoulder = keypoints.find(kp => kp.name === 'right_shoulder');
-      const leftHip = keypoints.find(kp => kp.name === 'left_hip');
-      const rightHip = keypoints.find(kp => kp.name === 'right_hip');
-
-      if (!leftShoulder || !rightShoulder || !leftHip || !rightHip) {
-        throw new Error('Required keypoints not detected');
-      }
-
-      // Calculate spans
-      const shoulderSpan = Math.abs(rightShoulder.x - leftShoulder.x);
-      const hipSpan = Math.abs(rightHip.x - leftHip.x);
-      
-      // Estimate waist span (approximation between shoulder and hip)
-      const waistSpan = shoulderSpan * 0.8; // Simple approximation
-      
-      // Calculate ratios
-      const r1WaistShoulder = waistSpan / shoulderSpan;
-      const r2HipShoulder = hipSpan / shoulderSpan;
-
-      return {
-        shoulderSpan,
-        waistSpan,
-        hipSpan,
-        r1WaistShoulder,
-        r2HipShoulder
-      };
-    } catch (error) {
-      console.error('Error calculating body metrics:', error);
-      return null;
-    }
-  };
-
+  
   const redrawCanvas = () => {
     if (!canvasRef.current || !imageRef.current) return;
 
