@@ -1,0 +1,15 @@
+{
+  "model_type": "logistic_regression",
+  "labels": ["apple", "hourglass", "inverted_triangle", "pear", "rectangle"],
+  "coefficients": [
+    [2.1, -1.8],
+    [-3.2, 0.5],
+    [1.7, -2.1],
+    [-1.5, 3.8],
+    [0.9, -0.4]
+  ],
+  "intercept": [-0.8, 1.2, -0.5, -1.1, 1.2],
+  "feature_names": ["r1_waist_shoulder", "r2_hip_shoulder"],
+  "accuracy": 0.89,
+  "created_timestamp": "2025-08-10T13:00:00.000Z"
+}
